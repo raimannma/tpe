@@ -10,9 +10,6 @@ readme = "README.md"
 categories = ["science"]
 license = "MIT"
 
-[badges]
-coveralls = {repository = "sile/tpe"}
-
 [dependencies]
 ordered-float = "2"
 rand = "0.8"
