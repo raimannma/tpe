@@ -59,7 +59,7 @@ impl BuildDensityEstimator for ParzenEstimatorBuilder {
             .chain(std::iter::once(prior))
             .map(|x| Normal {
                 mean: x,
-                stddev: std::f64::NAN,
+                stddev: f64::NAN,
             })
             .collect::<Vec<_>>();
         xs.sort_by_key(|x| OrderedFloat(x.mean));
