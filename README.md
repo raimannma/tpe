@@ -57,7 +57,7 @@ $ cat result.json | kurobako report > report.md
 
 The result (`report.md`) of the above commands is shown [here](https://gist.github.com/sile/f720168c85810757524e17c94978792a).
 
-[`kurobako`]: https://github.com/sile
+[`kurobako`]: https://github.com/optuna/kurobako
 
 
 References
