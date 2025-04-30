@@ -296,21 +296,36 @@ struct Trial {
 }
 
 /// Possible errors during [`TpeOptimizerBuilder::build`].
-#[derive(Debug, Clone, thiserror::Error)]
+#[derive(Debug, Clone)]
 pub enum BuildError {
-    #[error("the value of `gamma` must be in the range from 0.0 to 1.0")]
     /// The value of `gamma` must be in the range from `0.0` to `1.0`.
     GammaOutOfRange,
 
-    #[error("the value of `candidates` must be a positive integer")]
     /// The value of `candidates` must be a positive integer.
     ZeroCandidates,
 }
 
+impl std::fmt::Display for BuildError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BuildError::GammaOutOfRange => {
+                write!(
+                    f,
+                    "the value of `gamma` must be in the range from 0.0 to 1.0"
+                )
+            }
+            BuildError::ZeroCandidates => {
+                write!(f, "the value of `candidates` must be a positive integer")
+            }
+        }
+    }
+}
+
+impl std::error::Error for BuildError {}
+
 /// Possible errors during [`TpeOptimizer::tell`].
-#[derive(Debug, Clone, thiserror::Error)]
+#[derive(Debug, Clone)]
 pub enum TellError {
-    #[error("the parameter value {param} is out of the range {range}")]
     /// The parameter value is out of the range.
     ParamOutOfRange {
         /// Actual parameter value.
@@ -319,10 +334,28 @@ pub enum TellError {
         range: Range,
     },
 
-    #[error("NaN value is not allowed")]
     /// NaN value is not allowed.
     NanValue,
 }
+
+impl std::fmt::Display for TellError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TellError::ParamOutOfRange { param, range } => {
+                write!(
+                    f,
+                    "the parameter value {} is out of the range {}",
+                    param, range
+                )
+            }
+            TellError::NanValue => {
+                write!(f, "NaN value is not allowed")
+            }
+        }
+    }
+}
+
+impl std::error::Error for TellError {}
 
 #[cfg(test)]
 mod tests {
