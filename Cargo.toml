@@ -13,7 +13,7 @@ license = "MIT"
 [dependencies]
 rand = "0.8"
 rand_distr = "0.4"
-statrs = "0.15"
+statrs = "0.18.0"
 
 [dev-dependencies]
 anyhow = "1"
