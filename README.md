@@ -4,7 +4,6 @@ tpe
 [![tpe](https://img.shields.io/crates/v/tpe.svg)](https://crates.io/crates/tpe)
 [![Documentation](https://docs.rs/tpe/badge.svg)](https://docs.rs/tpe)
 [![Actions Status](https://github.com/sile/tpe/workflows/CI/badge.svg)](https://github.com/sile/tpe/actions)
-[![Coverage Status](https://coveralls.io/repos/github/sile/tpe/badge.svg?branch=master)](https://coveralls.io/github/sile/tpe?branch=master)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 This crate provides a hyperparameter optimization algorithm using TPE (Tree-structured Parzen Estimator).
