@@ -49,13 +49,22 @@ impl Range {
 }
 
 /// Possible errors during [`Range`] construction.
-#[derive(Debug, Clone, thiserror::Error)]
+#[derive(Debug, Clone)]
 pub enum RangeError {
-    #[error("not a finite range")]
     /// Not a finite range.
     NonFiniteRange,
 
-    #[error("an empty range")]
     /// An empty range.
     EmptyRange,
 }
+
+impl std::fmt::Display for RangeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RangeError::NonFiniteRange => write!(f, "not a finite range"),
+            RangeError::EmptyRange => write!(f, "an empty range"),
+        }
+    }
+}
+
+impl std::error::Error for RangeError {}
