@@ -45,7 +45,6 @@ use crate::density_estimation::{BuildDensityEstimator, DefaultEstimatorBuilder, 
 #[cfg(doc)]
 use crate::density_estimation::{HistogramEstimator, ParzenEstimator};
 use crate::range::{Range, RangeError};
-use ordered_float::OrderedFloat;
 use rand::distributions::Distribution;
 use rand::Rng;
 use std::num::NonZeroUsize;
@@ -171,7 +170,7 @@ impl<T: BuildDensityEstimator> TpeOptimizer<T> {
     /// to reduce bias due to too few samples.
     pub fn ask<R: Rng + ?Sized>(&mut self, rng: &mut R) -> Result<f64, T::Error> {
         if !self.is_sorted {
-            self.trials.sort_by_key(|t| OrderedFloat(t.value));
+            self.trials.sort_by(|x, y| x.value.total_cmp(&y.value));
             self.is_sorted = true;
         }
 
@@ -196,7 +195,7 @@ impl<T: BuildDensityEstimator> TpeOptimizer<T> {
                 let ei = superior_log_likelihood - inferior_log_likelihood;
                 (ei, candidate)
             })
-            .max_by_key(|(ei, _)| OrderedFloat(*ei))
+            .max_by(|(ei0, _), (ei1, _)| ei0.total_cmp(ei1))
             .map(|(_, param)| param)
             .expect("unreachable");
         Ok(param)
