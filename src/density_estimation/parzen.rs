@@ -1,6 +1,5 @@
 use crate::density_estimation::{BuildDensityEstimator, DensityEstimator};
 use crate::Range;
-use ordered_float::OrderedFloat;
 use rand::distributions::Distribution;
 use rand::seq::SliceRandom;
 use rand::Rng;
@@ -62,7 +61,7 @@ impl BuildDensityEstimator for ParzenEstimatorBuilder {
                 stddev: f64::NAN,
             })
             .collect::<Vec<_>>();
-        xs.sort_by_key(|x| OrderedFloat(x.mean));
+        xs.sort_by(|x, y| x.mean.total_cmp(&y.mean));
 
         self.setup_stddev(&mut xs, range);
 
@@ -126,7 +125,7 @@ impl DensityEstimator for ParzenEstimator {
 fn logsumexp(xs: &[f64]) -> f64 {
     let max_x = xs
         .iter()
-        .max_by_key(|&&x| OrderedFloat(x))
+        .max_by(|x, y| x.total_cmp(y))
         .expect("unreachable");
     xs.iter().map(|&x| (x - max_x).exp()).sum::<f64>().ln() + max_x
 }
