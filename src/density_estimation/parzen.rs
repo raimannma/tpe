@@ -1,7 +1,6 @@
 use crate::density_estimation::{BuildDensityEstimator, DensityEstimator};
 use crate::Range;
-use rand::distributions::Distribution;
-use rand::seq::SliceRandom;
+use rand::prelude::*;
 use rand::Rng;
 use statrs::distribution::{Continuous, ContinuousCDF};
 

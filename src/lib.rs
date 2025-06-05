@@ -45,7 +45,7 @@ use crate::density_estimation::{BuildDensityEstimator, DefaultEstimatorBuilder, 
 #[cfg(doc)]
 use crate::density_estimation::{HistogramEstimator, ParzenEstimator};
 use crate::range::{Range, RangeError};
-use rand::distributions::Distribution;
+use rand::prelude::*;
 use rand::Rng;
 use std::num::NonZeroUsize;
 
@@ -234,7 +234,7 @@ impl<T: BuildDensityEstimator> TpeOptimizer<T> {
     /// ```
     /// # fn main() -> anyhow::Result<()> {
     /// let temp_file = tempfile::NamedTempFile::new()?;
-    /// let mut rng = rand::thread_rng();
+    /// let mut rng = rand::rng();
     ///
     /// fn objective(x: f64) -> f64 {
     ///     x.powi(2)
@@ -342,11 +342,7 @@ impl std::fmt::Display for TellError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             TellError::ParamOutOfRange { param, range } => {
-                write!(
-                    f,
-                    "the parameter value {} is out of the range {}",
-                    param, range
-                )
+                write!(f, "the parameter value {param} is out of the range {range}")
             }
             TellError::NanValue => {
                 write!(f, "NaN value is not allowed")
@@ -373,8 +369,8 @@ mod tests {
             x.powi(2) + y as f64
         }
 
-        let mut best_value = std::f64::INFINITY;
-        let mut rng = rand::rngs::StdRng::from_seed(Default::default());
+        let mut best_value = f64::INFINITY;
+        let mut rng = StdRng::from_seed(Default::default());
         for _ in 0..100 {
             let x = optim0.ask(&mut rng)?;
             let y = optim1.ask(&mut rng)?;
@@ -392,7 +388,7 @@ mod tests {
     #[test]
     fn store_and_save_trials_worls() -> anyhow::Result<()> {
         let temp_file = tempfile::NamedTempFile::new()?;
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         fn objective(x: f64) -> f64 {
             x.powi(2)

@@ -6,9 +6,9 @@ use kurobako_core::domain::{self, Variable};
 use kurobako_core::epi::channel::{MessageReceiver, MessageSender};
 use kurobako_core::epi::solver::SolverMessage;
 use kurobako_core::problem::ProblemSpec;
-use kurobako_core::rng::ArcRng;
 use kurobako_core::solver::{Capability, SolverSpecBuilder};
 use kurobako_core::trial::{IdGen, NextTrial, Params, TrialId};
+use rand::rngs::ThreadRng;
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -16,11 +16,11 @@ struct Solver {
     problem: ProblemSpec,
     optimizers: Vec<tpe::TpeOptimizer>,
     evaluating: HashMap<TrialId, Vec<f64>>,
-    rng: ArcRng,
+    rng: ThreadRng,
 }
 
 impl Solver {
-    fn new(problem: ProblemSpec, seed: u64) -> anyhow::Result<Self> {
+    fn new(problem: ProblemSpec) -> anyhow::Result<Self> {
         let optimizers = problem
             .params_domain
             .variables()
@@ -31,7 +31,7 @@ impl Solver {
             problem,
             optimizers,
             evaluating: HashMap::new(),
-            rng: ArcRng::new(seed),
+            rng: rand::rng(),
         })
     }
 
@@ -112,11 +112,9 @@ fn main() -> anyhow::Result<()> {
     loop {
         match rx.recv()? {
             SolverMessage::CreateSolverCast {
-                solver_id,
-                random_seed,
-                problem,
+                solver_id, problem, ..
             } => {
-                let opt = Solver::new(problem, random_seed)?;
+                let opt = Solver::new(problem)?;
                 solvers.insert(solver_id, opt);
             }
             SolverMessage::AskCall {
@@ -127,11 +125,10 @@ fn main() -> anyhow::Result<()> {
                     .get_mut(&solver_id)
                     .ok_or_else(|| anyhow!("unknown solver {:?}", solver_id))?;
 
-                let rng = &mut solver.rng;
                 let params = solver
                     .optimizers
                     .iter_mut()
-                    .map(|o| o.ask(rng).map_err(anyhow::Error::from))
+                    .map(|o| o.ask(&mut solver.rng).map_err(anyhow::Error::from))
                     .collect::<anyhow::Result<Vec<_>>>()?;
                 let params = solver.unwarp(&params);
 
@@ -162,7 +159,7 @@ fn main() -> anyhow::Result<()> {
             SolverMessage::DropSolverCast { solver_id } => {
                 solvers.remove(&solver_id);
             }
-            other => panic!("unexpected message: {:?}", other),
+            other => panic!("unexpected message: {other:?}"),
         }
     }
 }

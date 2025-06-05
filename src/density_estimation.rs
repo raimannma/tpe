@@ -1,6 +1,6 @@
 //! Probability density function estimation.
 use crate::Range;
-use rand::distributions::Distribution;
+use rand::prelude::*;
 use rand::Rng;
 
 pub use self::histogram::{HistogramEstimator, HistogramEstimatorBuilder};
